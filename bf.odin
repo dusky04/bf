@@ -26,10 +26,8 @@ pop :: proc(st: ^Stack) {
 	st.sp -= 1
 	st.count -= 1
 }
-
-
 is_empty :: proc(st: ^Stack) -> bool {
-	return true if (st.count == 0) else false
+	return st.count == 0
 }
 top :: proc(st: ^Stack) -> (result: uint, ok: bool) {
 	if is_empty(st) {
@@ -38,11 +36,11 @@ top :: proc(st: ^Stack) -> (result: uint, ok: bool) {
 	return st.data[st.sp - 1], true
 }
 
-TAPE_SIZE :: 10
+TAPE_SIZE :: 1024
 BF :: struct {
 	data_ptr: uint,
 	ins_ptr:  uint,
-	tape:     [TAPE_SIZE]byte,
+	tape:     [TAPE_SIZE]u8,
 	st:       Stack,
 }
 
@@ -97,7 +95,13 @@ interpret :: proc(bf: ^BF, program: []byte) {
 		case ',':
 			{
 				// Accept one byte of input, storing its value in the byte at the data pointer.
-				fmt.println("',' encountered. NOT HANDLED YET")
+				x: [1]byte
+				read, err := os.read(os.stdin, x[:])
+				if err != nil {
+					fmt.println(err)
+					panic("something went wrong")
+				}
+				bf.tape[bf.data_ptr] = x[0]
 			}
 		case '[':
 			{
@@ -138,6 +142,7 @@ interpret :: proc(bf: ^BF, program: []byte) {
 				}
 			}
 		}
+
 		bf.ins_ptr += 1
 	}
 }
@@ -160,7 +165,6 @@ main :: proc() {
 		ins_ptr  = 0,
 	}
 
-	// NOTE: check if passing the program like this is making a copy
-	interpret(&bf, program)
-	fmt.println("%v", bf.tape)
+	interpret(&bf, program[:])
+	fmt.println(bf.tape)
 }

@@ -129,7 +129,6 @@ interpret :: proc(bf: ^BF, program: []byte) {
 					push(&bf.st, bf.ins_ptr)
 				}
 			}
-
 		case ']':
 			{
 				// If the byte at the data pointer is nonzero, then instead of moving the instruction pointer forward to the next command, jump it back to the command after the matching [ command.
@@ -148,8 +147,38 @@ interpret :: proc(bf: ^BF, program: []byte) {
 }
 
 
+print_help :: proc() {
+	fmt.println("Brainfuck Interpreter")
+	fmt.println()
+	fmt.printf("\x1b[38;2;90;246;142mUSAGE\x1b[0m: bf <brainfuck-file>\n")
+	fmt.println()
+	fmt.println("Options:")
+	fmt.println("  -h, --help     Show this help message")
+	fmt.println()
+	fmt.println("Brainfuck commands:")
+	fmt.println("  >  Move data pointer right")
+	fmt.println("  <  Move data pointer left")
+	fmt.println("  +  Increment byte at data pointer")
+	fmt.println("  -  Decrement byte at data pointer")
+	fmt.println("  .  Output byte at data pointer")
+	fmt.println("  ,  Input byte to data pointer")
+	fmt.println("  [  Jump forward if byte is zero")
+	fmt.println("  ]  Jump back if byte is nonzero")
+	fmt.println()
+	fmt.println("Examples:")
+	fmt.println("  bf test-programs/hello.bf")
+	fmt.println("  bf --help")
+}
+
 main :: proc() {
 	if len(os.args) < 2 {
+		print_help()
+		return
+	}
+
+
+	if os.args[1] == "-h" || os.args[1] == "--help" {
+		print_help()
 		return
 	}
 

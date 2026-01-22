@@ -4,8 +4,6 @@ import "core:fmt"
 import "core:os"
 
 
-BF_DEBUG :: false
-
 MAX_STACK_SIZE :: 256 // this defines the maximum nesting the brainfuck code can have
 Stack :: struct {
 	sp:    uint,
@@ -44,6 +42,7 @@ BF :: struct {
 	st:       Stack,
 }
 
+
 interpret :: proc(bf: ^BF, program: []byte) {
 
 
@@ -63,7 +62,6 @@ interpret :: proc(bf: ^BF, program: []byte) {
 				// Decrement the data pointer by one (to point to the next cell to the left). Undefined if at 0.
 				if bf.data_ptr == 0 {
 					fmt.println("Cannot decrement the data pointer anymore, hit 0")
-
 					break
 				}
 				bf.data_ptr -= 1
@@ -81,7 +79,7 @@ interpret :: proc(bf: ^BF, program: []byte) {
 		case '.':
 			{
 				// Output the byte at the data pointer.
-				if BF_DEBUG {
+				when ODIN_DEBUG {
 					fmt.printf(
 						"Byte at [cell = %4d | val = %3d] | str = %c]\n",
 						bf.data_ptr,
@@ -189,11 +187,11 @@ main :: proc() {
 	}
 	defer delete(program, context.allocator)
 
-	bf := BF {
-		data_ptr = 0,
-		ins_ptr  = 0,
-	}
+	bf := BF{}
 
 	interpret(&bf, program[:])
-	fmt.println(bf.tape)
+
+	when ODIN_DEBUG {
+		fmt.println(bf.tape)
+	}
 }

@@ -5,7 +5,7 @@ A basic Brainfuck interpreter written in Odin.
 ## Building
 
 ```bash
-make
+odin build .
 ```
 
 ```bash
